@@ -1,6 +1,5 @@
-import React, { useContext, useRef } from 'react';
+import React, { useContext, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
 import EmailList from '../components/EmailList';
 import { MailboxContext } from '../contexts/MailboxContext';
 import Container from '../components/Container';
@@ -10,7 +9,7 @@ const StructuredData: React.FC = () => {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    "name": "ZMAIL-24小时匿名邮箱",
+    "name": "ZMAIL匿名邮箱",
     "applicationCategory": "UtilityApplication",
     "operatingSystem": "All",
     "offers": {
@@ -18,7 +17,7 @@ const StructuredData: React.FC = () => {
       "price": "0",
       "priceCurrency": "CNY"
     },
-    "description": "创建临时邮箱地址，接收邮件，无需注册，保护您的隐私安全",
+    "description": "创建匿名邮箱地址，默认保留30天，支持手动更换，无需注册，保护您的隐私安全",
     "aggregateRating": {
       "@type": "AggregateRating",
       "ratingValue": "4.8",
@@ -42,11 +41,21 @@ const HomePage: React.FC = () => {
     emails, 
     selectedEmail, 
     setSelectedEmail, 
-    isEmailsLoading
+    isEmailsLoading,
+    createNewMailbox
   } = useContext(MailboxContext);
-  
-  // 使用ref来跟踪是否已经处理过404错误
-  const handlingNotFoundRef = useRef(false);
+  const [isCreatingMailbox, setIsCreatingMailbox] = useState(false);
+
+  const handleCreateMailbox = async () => {
+    try {
+      setIsCreatingMailbox(true);
+      await createNewMailbox();
+    } catch (error) {
+      console.error('Error creating mailbox from empty state:', error);
+    } finally {
+      setIsCreatingMailbox(false);
+    }
+  };
   
   if (isLoading) {
     return (
@@ -61,12 +70,29 @@ const HomePage: React.FC = () => {
   return (
     <Container>
       <StructuredData />
-      <EmailList 
-        emails={emails} 
-        selectedEmailId={selectedEmail}
-        onSelectEmail={setSelectedEmail}
-        isLoading={isEmailsLoading}
-      />
+      {mailbox ? (
+        <EmailList 
+          emails={emails} 
+          selectedEmailId={selectedEmail}
+          onSelectEmail={setSelectedEmail}
+          isLoading={isEmailsLoading}
+        />
+      ) : (
+        <section className="border rounded-lg bg-card p-8 text-center">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-muted text-primary">
+            <i className="fas fa-inbox text-lg"></i>
+          </div>
+          <h2 className="mt-4 text-xl font-semibold">{t('mailbox.noMailboxTitle')}</h2>
+          <p className="mt-2 text-sm text-muted-foreground">{t('mailbox.noMailboxDescription')}</p>
+          <button
+            onClick={handleCreateMailbox}
+            disabled={isCreatingMailbox}
+            className="mt-6 inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70"
+          >
+            {isCreatingMailbox ? t('common.loading') : t('mailbox.createRandom')}
+          </button>
+        </section>
+      )}
       
       {/* 介绍内容区域 */}
       <div className="mt-8 space-y-6">

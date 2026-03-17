@@ -11,8 +11,8 @@ interface SEOProps {
 }
 
 const SEO: React.FC<SEOProps> = ({
-  title = 'ZMAIL-24小时匿名邮箱',
-  description = '创建临时邮箱地址，接收邮件，无需注册，保护您的隐私安全',
+  title = 'ZMAIL匿名邮箱',
+  description = '创建匿名邮箱地址，默认保留30天，支持手动更换，无需注册，保护您的隐私安全',
   keywords = '临时邮箱,匿名邮箱,一次性邮箱,隐私保护,电子邮件,ZMAIL',
   ogImage = '/og-image.jpg',
   ogType = 'website',
@@ -20,7 +20,7 @@ const SEO: React.FC<SEOProps> = ({
 }) => {
   const location = useLocation();
   const url = `https://mail.mdzz.uk${location.pathname}`;
-  const fullTitle = `${title} | 创建临时邮箱地址，接收邮件，无需注册，保护您的隐私安全`;
+  const fullTitle = `${title} | 创建匿名邮箱地址，默认保留30天，支持手动更换`;
 
   useEffect(() => {
     // 更新页面标题

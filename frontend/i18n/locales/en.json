@@ -1,6 +1,6 @@
 {
   "app": {
-    "title": "ZMAIL-24h Anonymous Email"
+    "title": "ZMAIL Anonymous Mailbox"
   },
   "common": {
     "loading": "Loading...",
@@ -47,7 +47,7 @@
     "deleteSuccess": "Mailbox deleted successfully",
     "deleteFailed": "Failed to delete mailbox",
     "delete": "Delete Mailbox",
-    "confirmDelete": "Are you sure you want to delete this mailbox? A new anonymous mailbox will be created immediately.",
+    "confirmDelete": "Are you sure you want to delete this mailbox? You will need to create a new mailbox manually afterward.",
     "invalidAddress": "Invalid email address",
     "addressExists": "Email address already exists",
     "refresh": "Change Address",
@@ -56,6 +56,9 @@
     "customize": "Customize Address",
     "notFound": "Mailbox not found or expired",
     "creatingNew": "Creating new mailbox...",
+    "noMailboxTitle": "No mailbox is available right now",
+    "noMailboxDescription": "Your mailbox was deleted, expired, or could not be found. Create a new mailbox manually to continue.",
+    "noMailboxAfterInvalid": "Your mailbox is no longer available. Create a new one manually to continue.",
     "switch": "Switch Mailbox",
     "switchSuccess": "Mailbox switched successfully",
     "savedMailboxes": "Saved Mailboxes",
@@ -114,7 +117,7 @@
       },
       "temporary": {
         "title": "Temporary Email",
-        "description": "24-hour validity period, automatic expiration and deletion, avoid spam troubles"
+        "description": "30-day validity by default, reuse the same mailbox until you manually replace it"
       },
       "anonymous": {
         "title": "Anonymous Reception",
@@ -144,13 +147,13 @@
       "title": "Security Notice",
       "warning1": "Do not use for receiving important or sensitive information, temporary email does not guarantee data security",
       "warning2": "Email content may be accessed by others, please avoid including personal privacy information",
-      "warning3": "The mailbox will be automatically deleted after 24 hours, please save important content in time"
+      "warning3": "Mailboxes are kept for up to 30 days by default. Save important content before deleting or replacing them."
     },
     "faq": {
       "title": "FAQ",
       "q1": {
         "question": "How long is the mailbox valid?",
-        "answer": "All mailboxes are valid for 24 hours and will be automatically deleted after expiration."
+        "answer": "All mailboxes are valid for 30 days by default. If the mailbox is still valid, reopening the site will keep using the same address."
       },
       "q2": {
         "question": "Can I send emails?",
@@ -219,8 +222,8 @@
         "desc": "Generate temporary email addresses with one click, ready to use immediately."
       },
       "autodestroy": {
-        "title": "Auto Destroy",
-        "desc": "Mailboxes are automatically destroyed after 24 hours to protect privacy."
+        "title": "30-Day Retention",
+        "desc": "Mailboxes are kept for up to 30 days and can be replaced or deleted manually when needed."
       },
       "realtime": {
         "title": "Real-time Receiving",
@@ -304,7 +307,7 @@
     "section3": {
       "title": "Data Storage",
       "item1": "All email content is temporarily stored in memory and will not be persisted to disk.",
-      "item2": "Mailboxes and their contents are automatically deleted after 24 hours and cannot be recovered.",
+      "item2": "Mailboxes and their contents are typically retained for up to 30 days, and cannot be recovered after deletion or expiration.",
       "item3": "We do not keep backups of any user data."
     },
     "section4": {

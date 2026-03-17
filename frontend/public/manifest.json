@@ -1,7 +1,7 @@
 {
-  "name": "ZMAIL-24小时匿名邮箱",
+  "name": "ZMAIL匿名邮箱",
   "short_name": "ZMAIL",
-  "description": "创建临时邮箱地址，接收邮件，无需注册，保护您的隐私安全",
+  "description": "创建匿名邮箱地址，默认保留30天，支持手动更换，无需注册，保护您的隐私安全",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

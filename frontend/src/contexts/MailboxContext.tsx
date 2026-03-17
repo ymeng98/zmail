@@ -2,6 +2,7 @@ import React, { createContext, useState, useEffect, ReactNode, useRef } from 're
 import {
   createRandomMailbox,
   getMailboxFromLocalStorage,
+  hasInitializedMailbox,
   saveMailboxToLocalStorage,
   removeMailboxFromLocalStorage,
   getEmails,
@@ -89,6 +90,42 @@ export const MailboxProvider: React.FC<MailboxProviderProps> = ({ children }) =>
   const errorTimeoutRef = useRef<number | null>(null);
   const successTimeoutRef = useRef<number | null>(null);
 
+  const removeSavedMailbox = (address?: string) => {
+    if (!address) return;
+
+    try {
+      const savedData = localStorage.getItem('savedMailboxes');
+      if (!savedData) return;
+
+      const savedMailboxes = JSON.parse(savedData) as Mailbox[];
+      const updatedMailboxes = savedMailboxes.filter((savedMailbox) => savedMailbox.address !== address);
+      localStorage.setItem('savedMailboxes', JSON.stringify(updatedMailboxes));
+    } catch (error) {
+      console.error('Error removing saved mailbox from localStorage:', error);
+    }
+  };
+
+  const clearEmailCacheForMailbox = (mailboxAddress?: string) => {
+    setEmailCache({});
+
+    if (!mailboxAddress) return;
+
+    try {
+      localStorage.removeItem(`emailCache_${mailboxAddress}`);
+    } catch (error) {
+      console.error('Error clearing email cache from localStorage:', error);
+    }
+  };
+
+  const clearMailboxState = (mailboxAddress?: string) => {
+    setMailbox(null);
+    setEmails([]);
+    setSelectedEmail(null);
+    removeMailboxFromLocalStorage();
+    removeSavedMailbox(mailboxAddress);
+    clearEmailCacheForMailbox(mailboxAddress);
+  };
+
   // feat: 创建显示成功消息的函数
   const showSuccessMessage = (message: string) => {
     setSuccessMessage(message);
@@ -127,40 +164,44 @@ export const MailboxProvider: React.FC<MailboxProviderProps> = ({ children }) =>
   // 初始化：检查本地存储或创建新邮箱
   useEffect(() => {
     const initMailbox = async () => {
-      // 检查本地存储中是否有未过期的邮箱
-      const savedMailbox = getMailboxFromLocalStorage();
+      try {
+        const savedMailbox = getMailboxFromLocalStorage();
 
-      if (savedMailbox) {
-        setMailbox(savedMailbox);
+        if (savedMailbox) {
+          setMailbox(savedMailbox);
+          return;
+        }
+
+        if (!hasInitializedMailbox()) {
+          await createMailbox(false);
+        }
+      } finally {
         setIsLoading(false);
-      } else {
-        // 创建新邮箱
-        await createNewMailbox();
       }
     };
 
     initMailbox();
   }, []);
 
-  // 创建新邮箱
-  const createNewMailbox = async () => {
+  const createMailbox = async (showSuccessToast = true) => {
     try {
-      // 清除之前的错误和成功信息
       setErrorMessage(null);
       setSuccessMessage(null);
       setIsLoading(true);
+      const previousMailboxAddress = mailbox?.address;
       const result = await createRandomMailbox();
+
       if (result.success && result.mailbox) {
         setMailbox(result.mailbox);
         saveMailboxToLocalStorage(result.mailbox);
-        // [fix]: 创建新邮箱后，清空旧的邮件列表和缓存
         setEmails([]);
         setSelectedEmail(null);
-        clearEmailCache();
-        // feat: 创建新邮箱也给出提示
-        showSuccessMessage(t('mailbox.createSuccess'));
+        clearEmailCacheForMailbox(previousMailboxAddress);
+
+        if (showSuccessToast) {
+          showSuccessMessage(t('mailbox.createSuccess'));
+        }
       } else {
-        // fix: 使用全局通知函数
         showErrorMessage(t('mailbox.createFailed'));
         throw new Error('Failed to create mailbox');
       }
@@ -170,6 +211,11 @@ export const MailboxProvider: React.FC<MailboxProviderProps> = ({ children }) =>
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // 创建新邮箱
+  const createNewMailbox = async () => {
+    await createMailbox();
   };
 
   // 删除邮箱
@@ -185,20 +231,9 @@ export const MailboxProvider: React.FC<MailboxProviderProps> = ({ children }) =>
       const result = await apiDeleteMailbox(mailbox.address);
 
       if (result.success) {
-        // fix: 使用全局通知函数
         showSuccessMessage(t('mailbox.deleteSuccess'));
-
-        // 清除本地数据
-        setMailbox(null);
-        setEmails([]);
-        setSelectedEmail(null);
-        removeMailboxFromLocalStorage();
-        clearEmailCache();
-
-        // 创建新邮箱
-        await createNewMailbox();
+        clearMailboxState(mailbox.address);
       } else {
-        // fix: 使用全局通知函数
         showErrorMessage(t('mailbox.deleteFailed'));
       }
     } catch (error) {
@@ -259,17 +294,9 @@ export const MailboxProvider: React.FC<MailboxProviderProps> = ({ children }) =>
     };
   }, [mailbox, autoRefresh, isLoading]);
 
-  // [fix]: 重构处理邮箱不存在的逻辑，避免页面刷新
   const handleMailboxNotFound = async () => {
-    // fix: 使用全局通知函数
-    showSuccessMessage(t('mailbox.creatingNew'));
-    
-    // 清除当前无效的邮箱信息
-    removeMailboxFromLocalStorage();
-    clearEmailCache();
-    
-    // 异步创建新邮箱，并更新应用状态
-    await createNewMailbox();
+    clearMailboxState(mailbox?.address);
+    showErrorMessage(t('mailbox.noMailboxAfterInvalid'));
   };
 
   // 添加邮件到缓存
@@ -305,18 +332,7 @@ export const MailboxProvider: React.FC<MailboxProviderProps> = ({ children }) =>
 
   // 清除邮件缓存
   const clearEmailCache = () => {
-    setEmailCache({});
-
-    // 清除localStorage中的缓存
-    try {
-      const mailboxAddress = mailbox?.address;
-      if (mailboxAddress) {
-        const cacheKey = `emailCache_${mailboxAddress}`;
-        localStorage.removeItem(cacheKey);
-      }
-    } catch (error) {
-      console.error('Error clearing email cache from localStorage:', error);
-    }
+    clearEmailCacheForMailbox(mailbox?.address);
   };
 
   // 从localStorage加载邮件缓存

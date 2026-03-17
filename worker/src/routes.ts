@@ -13,6 +13,8 @@ import {
 } from './database';
 import { generateRandomAddress, } from './utils';
 
+const DEFAULT_MAILBOX_EXPIRES_IN_HOURS = 24 * 30;
+
 // 创建 Hono 应用
 const app = new Hono<{ Bindings: Env }>();
 
@@ -62,7 +64,7 @@ app.post('/api/mailboxes', async (c) => {
       return c.json({ success: false, error: '无效的邮箱地址' }, 400);
     }
     
-    const expiresInHours = 24; // 固定24小时有效期
+    const expiresInHours = DEFAULT_MAILBOX_EXPIRES_IN_HOURS;
     
     // 获取客户端IP
     const ip = c.req.header('CF-Connecting-IP') || 'unknown';

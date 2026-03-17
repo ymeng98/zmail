@@ -2,9 +2,12 @@ import { API_BASE_URL } from "../config";
 
 // API请求基础URL
 const apiUrl = (path: string) => `${API_BASE_URL}${path}`;
+const TEMP_MAILBOX_KEY = 'tempMailbox';
+const MAILBOX_INITIALIZED_KEY = 'mailboxInitialized';
+const DEFAULT_MAILBOX_EXPIRES_IN_HOURS = 24 * 30;
 
 // 创建随机邮箱
-export const createRandomMailbox = async (expiresInHours = 24) => {
+export const createRandomMailbox = async (expiresInHours = DEFAULT_MAILBOX_EXPIRES_IN_HOURS) => {
   try {
     const requestBody = JSON.stringify({
       expiresInHours,
@@ -35,7 +38,7 @@ export const createRandomMailbox = async (expiresInHours = 24) => {
 };
 
 // 创建自定义邮箱
-export const createCustomMailbox = async (address: string, expiresInHours = 24) => {
+export const createCustomMailbox = async (address: string, expiresInHours = DEFAULT_MAILBOX_EXPIRES_IN_HOURS) => {
   try {
     if (!address.trim()) {
       return { success: false, error: 'Invalid address' };
@@ -158,15 +161,16 @@ export const deleteMailbox = async (address: string) => {
 
 // 保存邮箱信息到本地存储
 export const saveMailboxToLocalStorage = (mailbox: Mailbox) => {
-  localStorage.setItem('tempMailbox', JSON.stringify({
+  localStorage.setItem(TEMP_MAILBOX_KEY, JSON.stringify({
     ...mailbox,
     savedAt: Date.now() / 1000
   }));
+  localStorage.setItem(MAILBOX_INITIALIZED_KEY, 'true');
 };
 
 // 从本地存储获取邮箱信息
 export const getMailboxFromLocalStorage = (): Mailbox | null => {
-  const savedMailbox = localStorage.getItem('tempMailbox');
+  const savedMailbox = localStorage.getItem(TEMP_MAILBOX_KEY);
   if (!savedMailbox) return null;
   
   try {
@@ -175,18 +179,22 @@ export const getMailboxFromLocalStorage = (): Mailbox | null => {
     
     // 检查邮箱是否过期
     if (mailbox.expiresAt < now) {
-      localStorage.removeItem('tempMailbox');
+      localStorage.removeItem(TEMP_MAILBOX_KEY);
       return null;
     }
     
     return mailbox;
   } catch (error) {
-    localStorage.removeItem('tempMailbox');
+    localStorage.removeItem(TEMP_MAILBOX_KEY);
     return null;
   }
 };
 
 // 从本地存储删除邮箱信息
 export const removeMailboxFromLocalStorage = () => {
-  localStorage.removeItem('tempMailbox');
-}; 
+  localStorage.removeItem(TEMP_MAILBOX_KEY);
+};
+
+export const hasInitializedMailbox = () => {
+  return localStorage.getItem(MAILBOX_INITIALIZED_KEY) === 'true';
+};

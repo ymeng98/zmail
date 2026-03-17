@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { createRandomMailbox, createCustomMailbox } from '../utils/api';
 import MailboxSwitcher from './MailboxSwitcher';
@@ -126,10 +126,8 @@ const HeaderMailbox: React.FC<HeaderMailboxProps> = ({
   };
   
   // 切换域名
-  const handleDomainChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleDomainChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedDomain(e.target.value);
-    // [fix] 切换域名后自动更换邮箱
-    await handleRefreshMailbox();
   };
   
   // 按钮基础样式
