@@ -1,4 +1,4 @@
-# <div align="center">🚀 ZMAIL - 24小时临时邮箱服务</div>
+# <div align="center">🚀 ZMAIL - 匿名邮箱服务（默认保留30天）</div>
 
 <div align="center">
   <p>
@@ -9,7 +9,7 @@
 
   <img src="frontend/public/favicon.svg" alt="ZMAIL Logo" width="120" height="120" style="background-color: #4f46e5; padding: 20px; border-radius: 12px; margin: 20px 0;">
 
-  <h3>💌 安全、简单、即用即走的临时邮箱服务</h3>
+  <h3>💌 安全、简单、默认持久的匿名邮箱服务</h3>
 
   <p>
     <a href="https://mail.mdzz.uk" target="_blank"><strong>🌐 在线体验</strong></a> •

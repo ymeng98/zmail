@@ -1,4 +1,4 @@
-# <div align="center">🚀 ZMAIL - 24-hour Temporary Email Service</div>
+# <div align="center">🚀 ZMAIL - Anonymous Mailbox Service (30-Day Default Retention)</div>
 
 <div align="center">
   <p>
@@ -9,7 +9,7 @@
 
   <img src="frontend/public/favicon.svg" alt="ZMAIL Logo" width="120" height="120" style="background-color: #4f46e5; padding: 20px; border-radius: 12px; margin: 20px 0;">
 
-  <h3>💌 Secure, Simple, Disposable Email Service</h3>
+  <h3>💌 Secure, Simple, Persistent-by-default Anonymous Mailbox Service</h3>
 
   <p>
     <a href="https://mail.mdzz.uk" target="_blank"><strong>🌐 Live Demo</strong></a> •
